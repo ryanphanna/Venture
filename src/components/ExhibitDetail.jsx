@@ -1,8 +1,23 @@
-import { X, MapPin, Clock, Gift, ExternalLink, Calendar, Sparkles, DollarSign, Accessibility } from 'lucide-react';
+import { useEffect } from 'react';
+import { X, MapPin, Clock, Gift, ExternalLink, Calendar, Sparkles, DollarSign, Accessibility, Bookmark, Share2, Check } from 'lucide-react';
 import { getInstitutionById } from '../data/sampleData';
+import { useApp } from '../context/AppContext';
 
 const ExhibitDetail = ({ exhibit, onClose }) => {
   const institution = getInstitutionById(exhibit.institutionId);
+  const { isExhibitSaved, toggleSavedExhibit, markVisited } = useApp();
+
+  // Handle Escape key to close modal
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [onClose]);
 
   if (!exhibit) return null;
 
@@ -33,6 +48,9 @@ const ExhibitDetail = ({ exhibit, onClose }) => {
     <div 
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="exhibit-detail-title"
     >
       <div 
         className="relative bg-white rounded-3xl shadow-editorial max-w-2xl w-full max-h-[90vh] overflow-y-auto"
@@ -84,7 +102,7 @@ const ExhibitDetail = ({ exhibit, onClose }) => {
           </div>
 
           {/* Title */}
-          <h2 className="text-headline font-bold text-neutral-900 mb-4">
+          <h2 id="exhibit-detail-title" className="text-headline font-bold text-neutral-900 mb-4">
             {exhibit.title}
           </h2>
 
@@ -224,6 +242,61 @@ const ExhibitDetail = ({ exhibit, onClose }) => {
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex flex-wrap gap-3 mb-6">
+            <button
+              onClick={() => toggleSavedExhibit(exhibit.id)}
+              className={`
+                flex items-center gap-2 px-5 py-2.5 rounded-full transition-magazine font-semibold
+                ${isExhibitSaved(exhibit.id)
+                  ? 'bg-accent-cream text-neutral-900 shadow-soft'
+                  : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+                }
+              `}
+            >
+              <Bookmark
+                size={18}
+                strokeWidth={2}
+                fill={isExhibitSaved(exhibit.id) ? 'currentColor' : 'none'}
+              />
+              <span>{isExhibitSaved(exhibit.id) ? 'Saved' : 'Save'}</span>
+            </button>
+
+            <button
+              onClick={() => {
+                markVisited(exhibit.institutionId);
+                // Show a brief success message (could be enhanced with toast notification)
+                alert('Marked as visited!');
+              }}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-neutral-100 text-neutral-700 hover:bg-neutral-200 transition-magazine font-semibold"
+            >
+              <Check size={18} strokeWidth={2} />
+              <span>Mark Visited</span>
+            </button>
+
+            <button
+              onClick={() => {
+                if (navigator.share) {
+                  navigator.share({
+                    title: exhibit.title,
+                    text: exhibit.description,
+                    url: window.location.href
+                  }).catch(() => {
+                    // User cancelled or error occurred
+                  });
+                } else {
+                  // Fallback: copy to clipboard
+                  navigator.clipboard.writeText(window.location.href);
+                  alert('Link copied to clipboard!');
+                }
+              }}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-neutral-100 text-neutral-700 hover:bg-neutral-200 transition-magazine font-semibold"
+            >
+              <Share2 size={18} strokeWidth={2} />
+              <span>Share</span>
+            </button>
           </div>
 
           {/* Call to action */}
