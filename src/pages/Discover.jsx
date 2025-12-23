@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext';
 import ExhibitCard from '../components/ExhibitCard';
 import ExhibitDetail from '../components/ExhibitDetail';
 import ReciprocalCard from '../components/ReciprocalCard';
+import TipCard from '../components/TipCard';
 import {
   exhibits,
   getExhibitsEndingSoon,
@@ -10,7 +11,7 @@ import {
   getExhibitsByInterests,
   reciprocalBenefits
 } from '../data/sampleData';
-import { Clock, Gift, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 const Discover = () => {
   const { userInterests, userMemberships, visitHistory, userLocation } = useApp();
@@ -43,177 +44,273 @@ const Discover = () => {
 
   const notRecentlyVisited = getNotRecentlyVisited();
 
-  // Create sections for the feed
-  const sections = [];
+  // Cultural tips and insights to sprinkle throughout the mood board
+  const culturalTips = [
+    {
+      id: 'tip-reciprocal',
+      type: 'membership',
+      title: 'Your membership unlocks more than you think',
+      description: 'Many cultural institutions offer reciprocal benefits. Check your membership card for the reciprocal icon.',
+      label: 'Pro Tip'
+    },
+    {
+      id: 'tip-free',
+      type: 'insider',
+      title: 'Free culture nights are everywhere',
+      description: 'Most museums offer free admission on select evenings or afternoons. Check their websites for "Community Access" or "Free First Thursdays".',
+      label: 'Insider Tip'
+    },
+    {
+      id: 'tip-timing',
+      type: 'insider',
+      title: 'Visit on weekday mornings',
+      description: 'Avoid crowds by visiting cultural institutions on weekday mornings. You\'ll have galleries almost to yourself and can truly immerse in the art.',
+      label: 'Pro Tip'
+    },
+    {
+      id: 'tip-explore',
+      type: 'neighborhood',
+      title: 'Explore by neighborhood',
+      description: 'Group visits by area to discover hidden gems. Many neighborhoods have clusters of galleries, museums, and cultural spaces within walking distance.',
+      label: 'Explore'
+    },
+    {
+      id: 'tip-special',
+      type: 'favorite',
+      title: 'Temporary exhibits are worth it',
+      description: 'Special exhibitions often showcase rare artifacts and artwork that may never return. Don\'t miss these limited-time opportunities.',
+      label: 'Don\'t Miss'
+    },
+    {
+      id: 'tip-membership',
+      type: 'membership',
+      title: 'A membership pays for itself',
+      description: 'If you visit more than 3-4 times a year, a membership becomes worth it. Plus: reciprocal benefits, special events, and priority booking.',
+      label: 'Smart Move'
+    }
+  ];
 
-  // Section 1: Ending Soon (if any)
-  if (endingSoon.length > 0) {
-    sections.push({
-      id: 'ending-soon',
-      title: 'Ending Soon',
-      icon: Clock,
-      color: 'text-red-500',
-      items: endingSoon.slice(0, 2)
+  // Create a fluid mood board grid mixing all content types
+  const createMoodBoardGrid = () => {
+    const items = [];
+    let tipIndex = 0;
+
+    // Add ending soon exhibits first (they're urgent)
+    if (endingSoon.length > 0) {
+      items.push({
+        type: 'exhibit',
+        data: endingSoon[0],
+        size: 'large', // Hero card
+        priority: 1
+      });
+
+      if (endingSoon.length > 1) {
+        items.push({
+          type: 'exhibit',
+          data: endingSoon[1],
+          size: 'medium',
+          priority: 1
+        });
+      }
+    }
+
+    // Add a tip about timing or free access
+    if (freeAccess.length > 0 && culturalTips[1]) {
+      items.push({
+        type: 'tip',
+        data: culturalTips[1], // Free culture nights tip
+        size: 'medium',
+        priority: 2
+      });
+    }
+
+    // Add free access exhibits
+    if (freeAccess.length > 0) {
+      items.push({
+        type: 'exhibit',
+        data: freeAccess[0],
+        size: 'medium',
+        priority: 2
+      });
+
+      if (freeAccess.length > 1) {
+        items.push({
+          type: 'exhibit',
+          data: freeAccess[1],
+          size: 'small',
+          priority: 2
+        });
+      }
+    }
+
+    // Add reciprocal benefits if user has memberships
+    if (userReciprocals.length > 0) {
+      // Add reciprocal tip first
+      if (culturalTips[0]) {
+        items.push({
+          type: 'tip',
+          data: culturalTips[0], // Membership tip
+          size: 'small',
+          priority: 3
+        });
+      }
+
+      items.push({
+        type: 'reciprocal',
+        data: userReciprocals[0],
+        size: 'medium',
+        priority: 3
+      });
+
+      if (userReciprocals.length > 1) {
+        items.push({
+          type: 'reciprocal',
+          data: userReciprocals[1],
+          size: 'medium',
+          priority: 3
+        });
+      }
+    }
+
+    // Add visiting tips
+    if (culturalTips[2]) {
+      items.push({
+        type: 'tip',
+        data: culturalTips[2], // Weekday mornings tip
+        size: 'small',
+        priority: 4
+      });
+    }
+
+    // Add interest-matched exhibits
+    const availableInterestMatched = interestMatched
+      .filter(ex => !endingSoon.includes(ex) && !freeAccess.includes(ex))
+      .slice(0, 6);
+
+    availableInterestMatched.forEach((exhibit, idx) => {
+      const size = idx === 0 ? 'large' : idx % 3 === 0 ? 'medium' : 'small';
+      items.push({
+        type: 'exhibit',
+        data: exhibit,
+        size,
+        priority: 5
+      });
     });
-  }
 
-  // Section 2: Member Benefits (if user has memberships)
-  if (userReciprocals.length > 0) {
-    sections.push({
-      id: 'reciprocals',
-      title: 'Your Member Benefits',
-      icon: Gift,
-      color: 'text-purple-500',
-      items: userReciprocals.slice(0, 2)
-    });
-  }
+    // Sprinkle more tips throughout
+    if (culturalTips[3]) {
+      items.splice(Math.floor(items.length / 2), 0, {
+        type: 'tip',
+        data: culturalTips[3], // Explore by neighborhood
+        size: 'medium',
+        priority: 4
+      });
+    }
 
-  // Section 3: Free Access
-  if (freeAccess.length > 0) {
-    sections.push({
-      id: 'free-access',
-      title: 'Free Access',
-      icon: Gift,
-      color: 'text-green-500',
-      items: freeAccess.slice(0, 2)
-    });
-  }
+    if (culturalTips[4]) {
+      items.splice(Math.floor(items.length * 0.7), 0, {
+        type: 'tip',
+        data: culturalTips[4], // Special exhibits tip
+        size: 'small',
+        priority: 4
+      });
+    }
 
-  // Section 4: Haven't Visited Recently
-  if (notRecentlyVisited.length > 0) {
-    sections.push({
-      id: 'revisit',
-      title: 'Worth Another Visit',
-      icon: Sparkles,
-      color: 'text-blue-500',
-      items: notRecentlyVisited
-    });
-  }
+    // Add not recently visited exhibits
+    if (notRecentlyVisited.length > 0) {
+      notRecentlyVisited.forEach((exhibit) => {
+        items.push({
+          type: 'exhibit',
+          data: exhibit,
+          size: 'medium',
+          priority: 6
+        });
+      });
+    }
 
-  // Section 5: Interest Matched
-  sections.push({
-    id: 'interest-matched',
-    title: 'Based on Your Interests',
-    icon: Sparkles,
-    color: 'text-indigo-500',
-    items: interestMatched.filter(ex => !endingSoon.includes(ex)).slice(0, 4)
-  });
+    // Add final membership tip if user doesn't have memberships
+    if (userMemberships.length === 0 && culturalTips[5]) {
+      items.push({
+        type: 'tip',
+        data: culturalTips[5], // Membership value tip
+        size: 'medium',
+        priority: 7
+      });
+    }
+
+    return items;
+  };
+
+  const moodBoardItems = createMoodBoardGrid();
 
   return (
-    <div className="min-h-screen bg-accent-cream pb-16">
-      {/* Hero Section - Magazine editorial style */}
-      <div className="relative bg-gradient-to-br from-neutral-900 via-primary-900 to-primary-800 text-white py-24 sm:py-32 px-6 sm:px-8 overflow-hidden">
+    <div className="min-h-screen bg-accent-cream pb-20">
+      {/* Minimal Hero - Magazine masthead style */}
+      <div className="relative bg-gradient-to-br from-neutral-900 via-primary-900 to-primary-800 text-white py-16 sm:py-20 px-6 sm:px-8 overflow-hidden">
         {/* Decorative background elements */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-accent-gold/20 rounded-full -translate-y-48 translate-x-48 blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-accent-sage/20 rounded-full translate-y-48 -translate-x-48 blur-3xl" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-accent-gold/10 rounded-full -translate-y-48 translate-x-48 blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-accent-sage/10 rounded-full translate-y-32 -translate-x-48 blur-3xl" />
 
         <div className="max-w-7xl mx-auto relative">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-16 h-1 bg-gradient-to-r from-accent-gold to-accent-sage rounded-full" />
-            <span className="text-sm font-bold text-white/70 uppercase tracking-widest">Your Cultural Guide</span>
+          <div className="flex items-center gap-3 mb-4">
+            <Sparkles size={20} className="text-accent-gold" strokeWidth={2.5} />
+            <span className="text-caption text-white/70 uppercase tracking-widest">Curated For You</span>
           </div>
-          <h2 className="text-5xl sm:text-7xl font-black mb-5 text-shadow-editorial leading-tight bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
-            Discover {userLocation.city || 'Culture'}
-          </h2>
-          <p className="text-xl text-white/80 max-w-2xl leading-relaxed">
-            Curated cultural experiences tailored to your interests and memberships
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-black mb-4 text-shadow-editorial leading-none">
+            Discover
+          </h1>
+          <p className="text-body-lg text-white/75 max-w-2xl leading-magazine">
+            An evolving collection of cultural experiences tailored to your interests
           </p>
         </div>
       </div>
 
-      {/* Feed - Magazine layout with generous spacing */}
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 -mt-12">
-        {sections.map((section, sectionIndex) => (
-          <div key={section.id} className="mb-16 sm:mb-20">
-            {/* Section Header - Refined typography */}
-            <div className="mb-8 sm:mb-10 bg-white rounded-2xl p-6 shadow-soft border-l-4 border-accent-gold">
-              <div className="flex items-center gap-4 mb-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-accent-gold to-accent-sage rounded-xl flex items-center justify-center shadow-soft">
-                  <section.icon
-                    className="text-white"
-                    size={24}
-                    strokeWidth={2.5}
-                  />
-                </div>
-                <div>
-                  <h3 className="text-2xl sm:text-3xl font-black text-neutral-900">
-                    {section.title}
-                  </h3>
-                  {section.id === 'ending-soon' && (
-                    <p className="text-sm text-neutral-600 font-medium mt-1">
-                      Don't miss these limited-time exhibitions
-                    </p>
-                  )}
-                  {section.id === 'reciprocals' && (
-                    <p className="text-sm text-neutral-600 font-medium mt-1">
-                      Exclusive access through your memberships
-                    </p>
-                  )}
-                  {section.id === 'free-access' && (
-                    <p className="text-sm text-neutral-600 font-medium mt-1">
-                      Experience culture at no cost
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Bento Grid - Dynamic layouts */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-editorial">
-              {section.id === 'reciprocals' ? (
-                // Reciprocal benefits cards
-                section.items.map((item) => (
-                  <ReciprocalCard key={item.id} reciprocal={item} />
-                ))
-              ) : (
-                // Exhibit cards with sophisticated varied sizes
-                section.items.map((item, index) => {
-                  // More dynamic size variation for visual focal points
-                  let size = 'medium';
-
-                  // First section gets a hero card
-                  if (sectionIndex === 0 && index === 0) {
-                    size = 'large';
-                  }
-                  // Create visual hierarchy with varied sizes
-                  else if (section.items.length >= 4) {
-                    if (index === 0) size = 'large';
-                    else if (index === 1 || index === 2) size = 'medium';
-                    else size = 'small';
-                  }
-                  else if (section.items.length === 3) {
-                    if (index === 0) size = 'medium';
-                    else size = 'small';
-                  }
-                  else if (section.items.length === 2) {
-                    size = 'medium';
-                  }
-
+      {/* Mood Board Grid - Fluid bento layout */}
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 -mt-8">
+        {moodBoardItems.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-editorial">
+            {moodBoardItems.map((item, index) => {
+              switch (item.type) {
+                case 'exhibit':
                   return (
                     <ExhibitCard
-                      key={item.id}
-                      exhibit={item}
-                      size={size}
-                      onClick={() => setSelectedExhibit(item)}
+                      key={`exhibit-${item.data.id}-${index}`}
+                      exhibit={item.data}
+                      size={item.size}
+                      onClick={() => setSelectedExhibit(item.data)}
                     />
                   );
-                })
-              )}
-            </div>
+                case 'reciprocal':
+                  return (
+                    <ReciprocalCard
+                      key={`reciprocal-${item.data.id}-${index}`}
+                      reciprocal={item.data}
+                    />
+                  );
+                case 'tip':
+                  return (
+                    <TipCard
+                      key={`tip-${item.data.id}-${index}`}
+                      tip={item.data}
+                      size={item.size}
+                    />
+                  );
+                default:
+                  return null;
+              }
+            })}
           </div>
-        ))}
-
-        {/* Empty State - Elegant design */}
-        {sections.length === 0 && (
-          <div className="text-center py-24 sm:py-32">
+        ) : (
+          /* Empty State - Elegant design */
+          <div className="text-center py-24 sm:py-32 bg-white rounded-3xl shadow-soft">
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-accent-gold to-accent-sage mx-auto mb-8 flex items-center justify-center">
               <Sparkles className="text-white" size={36} strokeWidth={2} />
             </div>
-            <h3 className="text-title-lg font-bold text-neutral-900 mb-4">
-              Welcome to Culture {userLocation.city || 'Discovery'}
-            </h3>
+            <h2 className="text-title-lg font-bold text-neutral-900 mb-4">
+              Welcome to Your Cultural Guide
+            </h2>
             <p className="text-body text-neutral-600 max-w-md mx-auto leading-magazine">
-              Set your interests in Settings to receive personalized cultural recommendations
+              Set your interests and memberships in Settings to unlock personalized cultural discoveries
             </p>
           </div>
         )}
@@ -221,9 +318,9 @@ const Discover = () => {
 
       {/* Exhibit Detail Modal */}
       {selectedExhibit && (
-        <ExhibitDetail 
-          exhibit={selectedExhibit} 
-          onClose={() => setSelectedExhibit(null)} 
+        <ExhibitDetail
+          exhibit={selectedExhibit}
+          onClose={() => setSelectedExhibit(null)}
         />
       )}
     </div>
