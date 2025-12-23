@@ -11,26 +11,33 @@ const Saved = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-8">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 py-8 px-4">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">
+    <div className="min-h-screen bg-accent-cream pb-16">
+      {/* Header - Magazine editorial style */}
+      <div className="relative bg-gradient-to-br from-neutral-900 via-neutral-800 to-primary-800 text-white py-16 sm:py-20 px-6 sm:px-8 overflow-hidden">
+        {/* Decorative background elements */}
+        <div className="absolute top-0 right-0 w-80 h-80 bg-accent-gold/10 rounded-full -translate-y-40 translate-x-40 blur-3xl" />
+
+        <div className="max-w-7xl mx-auto relative">
+          <div className="flex items-center gap-3 mb-5">
+            <Bookmark size={24} strokeWidth={2.5} className="text-accent-gold" />
+            <div className="h-px flex-1 bg-gradient-to-r from-white/20 to-transparent" />
+          </div>
+          <h2 className="text-headline sm:text-display-sm font-bold mb-3 text-shadow-editorial">
             Saved Exhibits
           </h2>
-          <p className="text-gray-600">
+          <p className="text-body-lg text-white/80 leading-magazine">
             {savedExhibitsList.length === 0
-              ? 'No saved exhibits yet'
-              : `${savedExhibitsList.length} exhibit${savedExhibitsList.length !== 1 ? 's' : ''} saved`
+              ? 'Your curated collection awaits'
+              : `${savedExhibitsList.length} exhibition${savedExhibitsList.length !== 1 ? 's' : ''} in your collection`
             }
           </p>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 mt-8">
+      {/* Content - Refined spacing */}
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 mt-12">
         {savedExhibitsList.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-editorial">
             {savedExhibitsList.map((exhibit) => (
               <ExhibitCard
                 key={exhibit.id}
@@ -40,13 +47,15 @@ const Saved = () => {
             ))}
           </div>
         ) : (
-          <div className="text-center py-16">
-            <Bookmark className="mx-auto text-gray-400 mb-4" size={48} />
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">
+          <div className="text-center py-24 sm:py-32">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-accent-gold to-accent-sage mx-auto mb-8 flex items-center justify-center">
+              <Bookmark className="text-white" size={36} strokeWidth={2} />
+            </div>
+            <h3 className="text-title-lg font-bold text-neutral-900 mb-4">
               No Saved Exhibits
             </h3>
-            <p className="text-gray-500 max-w-md mx-auto">
-              Bookmark exhibits from the Discover page to save them here for later
+            <p className="text-body text-neutral-600 max-w-md mx-auto leading-magazine">
+              Bookmark exhibitions from the Discover page to create your personal collection
             </p>
           </div>
         )}

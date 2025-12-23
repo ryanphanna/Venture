@@ -1,4 +1,4 @@
-import { Bookmark, Clock, MapPin, Gift } from 'lucide-react';
+import { Bookmark, Clock, MapPin, Gift, Sparkles } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { getInstitutionById } from '../data/sampleData';
 
@@ -18,20 +18,28 @@ const ExhibitCard = ({ exhibit, size = 'medium', variant = 'default' }) => {
   };
 
   const daysUntilEnd = getDaysUntilEnd();
+  const isEndingSoon = daysUntilEnd !== null && daysUntilEnd <= 7;
 
-  // Size classes for bento grid
+  // Magazine-style size classes with more variation
   const sizeClasses = {
     small: 'col-span-1',
     medium: 'col-span-1 md:col-span-2',
-    large: 'col-span-1 md:col-span-2',
+    large: 'col-span-1 md:col-span-2 lg:col-span-3',
     wide: 'col-span-full'
   };
 
   const heightClasses = {
-    small: 'h-[280px]',
-    medium: 'h-[320px]',
-    large: 'h-[400px] md:h-[480px]',
-    wide: 'h-[320px]'
+    small: 'h-[320px] sm:h-[380px]',
+    medium: 'h-[420px] sm:h-[480px]',
+    large: 'h-[500px] sm:h-[580px] md:h-[650px]',
+    wide: 'h-[400px] sm:h-[450px]'
+  };
+
+  // Sophisticated overlay based on card size and variant
+  const getOverlayStyle = () => {
+    if (size === 'large') return 'image-overlay-editorial';
+    if (size === 'wide') return 'image-overlay-side';
+    return 'image-overlay-subtle';
   };
 
   const handleSave = (e) => {
@@ -44,91 +52,112 @@ const ExhibitCard = ({ exhibit, size = 'medium', variant = 'default' }) => {
       className={`
         ${sizeClasses[size]}
         ${heightClasses[size]}
-        relative overflow-hidden rounded-2xl bg-white shadow-sm hover:shadow-md
-        transition-all duration-300 cursor-pointer group
+        relative overflow-hidden cursor-pointer group
+        hover-elevate image-magazine-hover
+        ${size === 'large' ? 'rounded-3xl shadow-medium hover:shadow-editorial' : 'rounded-2xl shadow-soft hover:shadow-strong'}
       `}
     >
-      {/* Image */}
-      <div className="relative w-full h-full">
+      {/* Image with magazine-style treatment */}
+      <div className="relative w-full h-full bg-neutral-900">
         <img
           src={exhibit.image}
           alt={exhibit.title}
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover image-magazine"
         />
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+        {/* Sophisticated gradient overlay */}
+        <div className={`absolute inset-0 ${getOverlayStyle()}`} />
 
-        {/* Save button */}
+        {/* Save button - refined design */}
         <button
           onClick={handleSave}
           className={`
-            absolute top-4 right-4 p-2 rounded-full backdrop-blur-sm transition-all
+            absolute top-5 right-5 sm:top-6 sm:right-6 p-3 rounded-full
+            backdrop-editorial transition-magazine-fast z-10
             ${isSaved
-              ? 'bg-white text-gray-900'
-              : 'bg-white/30 text-white hover:bg-white/50'
+              ? 'bg-accent-cream text-neutral-900 shadow-soft'
+              : 'bg-white/20 text-white hover:bg-white/30 border border-white/20'
             }
           `}
           aria-label={isSaved ? 'Remove from saved' : 'Save exhibit'}
         >
           <Bookmark
-            size={20}
+            size={size === 'large' ? 22 : 20}
             fill={isSaved ? 'currentColor' : 'none'}
+            strokeWidth={2}
           />
         </button>
 
-        {/* Free badge */}
-        {exhibit.isFree && (
-          <div className="absolute top-4 left-4 px-3 py-1 bg-green-500 text-white text-xs font-semibold rounded-full">
-            FREE
-          </div>
-        )}
+        {/* Badges - sophisticated styling */}
+        <div className="absolute top-5 left-5 sm:top-6 sm:left-6 flex flex-col gap-2 z-10">
+          {/* Free badge */}
+          {exhibit.isFree && (
+            <div className="inline-flex items-center gap-1.5 px-4 py-2 bg-accent-sage/90 backdrop-editorial text-white text-overline rounded-full shadow-soft">
+              <Gift size={14} strokeWidth={2.5} />
+              <span>Free Access</span>
+            </div>
+          )}
 
-        {/* Content */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
-          {/* Institution */}
-          <div className="flex items-center space-x-2 mb-2">
-            <MapPin size={14} className="text-white/80" />
-            <span className="text-xs sm:text-sm text-white/90 font-medium">
+          {/* Ending soon badge */}
+          {isEndingSoon && (
+            <div className="inline-flex items-center gap-1.5 px-4 py-2 bg-accent-terracotta/95 backdrop-editorial text-white text-overline rounded-full shadow-soft animate-pulse">
+              <Clock size={14} strokeWidth={2.5} />
+              <span>Ending Soon</span>
+            </div>
+          )}
+        </div>
+
+        {/* Content - improved hierarchy */}
+        <div className={`absolute bottom-0 left-0 right-0 ${size === 'large' ? 'p-8 sm:p-10' : size === 'wide' ? 'p-6 sm:p-8' : 'p-5 sm:p-7'}`}>
+          {/* Institution - more elegant */}
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-1 h-1 rounded-full bg-accent-gold" />
+            <span className="text-overline text-white/80 tracking-wide">
               {institution?.name}
             </span>
           </div>
 
-          {/* Title */}
-          <h3 className="text-lg sm:text-xl font-bold text-white mb-2 line-clamp-2">
+          {/* Title - bold magazine typography */}
+          <h3 className={`
+            font-bold text-white mb-3 line-clamp-2 text-shadow-editorial
+            ${size === 'large' ? 'text-title-lg sm:text-headline' : size === 'wide' ? 'text-title sm:text-title-lg' : 'text-xl sm:text-title'}
+          `}>
             {exhibit.title}
           </h3>
 
-          {/* Description */}
-          {size !== 'small' && (
-            <p className="text-sm text-white/80 mb-3 line-clamp-2">
+          {/* Description - refined typography */}
+          {(size === 'large' || size === 'wide' || size === 'medium') && (
+            <p className={`
+              text-white/85 mb-4 line-clamp-2 text-shadow-soft leading-magazine
+              ${size === 'large' ? 'text-body-lg' : 'text-body'}
+            `}>
               {exhibit.description}
             </p>
           )}
 
-          {/* Metadata */}
-          <div className="flex flex-wrap items-center gap-3 text-xs text-white/70">
-            {daysUntilEnd !== null && daysUntilEnd > 0 && (
-              <div className="flex items-center space-x-1">
-                <Clock size={14} />
+          {/* Metadata - sophisticated badges */}
+          <div className="flex flex-wrap items-center gap-2.5">
+            {daysUntilEnd !== null && daysUntilEnd > 0 && !isEndingSoon && (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/15 backdrop-soft rounded-full text-caption text-white/90">
+                <Clock size={14} strokeWidth={2} />
                 <span>
                   {daysUntilEnd === 1
                     ? 'Ends tomorrow'
-                    : `${daysUntilEnd} days left`
+                    : `${daysUntilEnd} days`
                   }
                 </span>
               </div>
             )}
 
             {exhibit.isPermanent && (
-              <span className="px-2 py-1 bg-white/10 rounded-full">
-                Permanent Collection
-              </span>
+              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/15 backdrop-soft rounded-full text-caption text-white/90">
+                <Sparkles size={14} strokeWidth={2} />
+                <span>Permanent</span>
+              </div>
             )}
 
             {exhibit.isFree && exhibit.freeAccessDetails && (
-              <div className="flex items-center space-x-1">
-                <Gift size={14} />
-                <span>{exhibit.freeAccessDetails.days.join(', ')}</span>
+              <div className="px-3 py-1.5 bg-accent-sage/30 backdrop-soft rounded-full text-caption text-white/95 font-medium">
+                {exhibit.freeAccessDetails.days.join(' • ')}
               </div>
             )}
           </div>

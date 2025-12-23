@@ -41,28 +41,37 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-8">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 py-8 px-4">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">
+    <div className="min-h-screen bg-accent-cream pb-16">
+      {/* Header - Magazine editorial style */}
+      <div className="relative bg-gradient-to-br from-neutral-900 via-neutral-800 to-primary-800 text-white py-16 sm:py-20 px-6 sm:px-8 overflow-hidden">
+        {/* Decorative background elements */}
+        <div className="absolute top-0 right-0 w-80 h-80 bg-accent-sage/10 rounded-full -translate-y-40 translate-x-40 blur-3xl" />
+
+        <div className="max-w-5xl mx-auto relative">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="w-12 h-0.5 bg-accent-gold" />
+            <span className="text-overline text-white/70">Personalization</span>
+          </div>
+          <h2 className="text-headline sm:text-display-sm font-bold mb-3 text-shadow-editorial">
             Settings
           </h2>
-          <p className="text-gray-600">
-            Manage your preferences and memberships
+          <p className="text-body-lg text-white/80 leading-magazine">
+            Curate your cultural journey with personalized preferences
           </p>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 mt-8 space-y-8">
+      <div className="max-w-5xl mx-auto px-6 sm:px-8 mt-12 space-y-10">
         {/* Interests Section */}
-        <section className="bg-white rounded-2xl shadow-sm p-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">
-            Your Interests
-          </h3>
-          <p className="text-gray-600 mb-6">
-            Select topics you're interested in to get personalized recommendations
-          </p>
+        <section className="bg-white rounded-3xl shadow-soft p-8 sm:p-10">
+          <div className="mb-8">
+            <h3 className="text-title-lg font-bold text-neutral-900 mb-3">
+              Your Interests
+            </h3>
+            <p className="text-body text-neutral-600 leading-magazine">
+              Select topics to refine your personalized cultural recommendations
+            </p>
+          </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
             {availableInterests.map((interest) => {
@@ -72,17 +81,17 @@ const Settings = () => {
                   key={interest.id}
                   onClick={() => toggleInterest(interest.id)}
                   className={`
-                    flex items-center justify-center space-x-2 px-4 py-3 rounded-xl
-                    transition-all duration-200 border-2
+                    group relative flex items-center justify-center gap-2 px-5 py-4 rounded-2xl
+                    transition-magazine border-2
                     ${isSelected
-                      ? 'bg-gray-900 text-white border-gray-900'
-                      : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'
+                      ? 'bg-neutral-900 text-white border-neutral-900 shadow-soft'
+                      : 'bg-white text-neutral-700 border-neutral-200 hover:border-accent-gold hover:shadow-subtle'
                     }
                   `}
                 >
-                  <span className="text-xl">{interest.emoji}</span>
-                  <span className="text-sm font-medium">{interest.label}</span>
-                  {isSelected && <Check size={16} />}
+                  <span className="text-xl transition-transform group-hover:scale-110">{interest.emoji}</span>
+                  <span className="text-caption font-semibold">{interest.label}</span>
+                  {isSelected && <Check size={16} strokeWidth={2.5} className="absolute top-2 right-2" />}
                 </button>
               );
             })}
@@ -90,17 +99,19 @@ const Settings = () => {
         </section>
 
         {/* Memberships Section */}
-        <section className="bg-white rounded-2xl shadow-sm p-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">
-            Your Memberships
-          </h3>
-          <p className="text-gray-600 mb-6">
-            Add your cultural institution memberships to discover reciprocal benefits
-          </p>
+        <section className="bg-white rounded-3xl shadow-soft p-8 sm:p-10">
+          <div className="mb-8">
+            <h3 className="text-title-lg font-bold text-neutral-900 mb-3">
+              Your Memberships
+            </h3>
+            <p className="text-body text-neutral-600 leading-magazine">
+              Add your cultural institution memberships to unlock exclusive reciprocal benefits
+            </p>
+          </div>
 
           {/* Current Memberships */}
           {userMemberships.length > 0 && (
-            <div className="mb-6 space-y-3">
+            <div className="mb-8 space-y-3">
               {userMemberships.map((membership) => {
                 const institution = institutions.find(
                   i => i.id === membership.institutionId
@@ -108,22 +119,25 @@ const Settings = () => {
                 return (
                   <div
                     key={`${membership.institutionId}-${membership.tier}`}
-                    className="flex items-center justify-between p-4 bg-gray-50 rounded-xl"
+                    className="group flex items-center justify-between p-5 bg-accent-cream rounded-2xl border border-neutral-200 transition-magazine hover:border-accent-gold hover:shadow-subtle"
                   >
-                    <div>
-                      <div className="font-semibold text-gray-900">
-                        {institution?.name}
-                      </div>
-                      <div className="text-sm text-gray-600 capitalize">
-                        {membership.tier} Membership
+                    <div className="flex items-center gap-3">
+                      <div className="w-1.5 h-12 bg-gradient-to-b from-accent-gold to-accent-sage rounded-full" />
+                      <div>
+                        <div className="text-body font-bold text-neutral-900">
+                          {institution?.name}
+                        </div>
+                        <div className="text-caption text-neutral-600 capitalize font-medium">
+                          {membership.tier} Membership
+                        </div>
                       </div>
                     </div>
                     <button
                       onClick={() => toggleMembership(membership.institutionId, membership.tier)}
-                      className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                      className="p-2.5 text-accent-terracotta hover:bg-accent-terracotta/10 rounded-xl transition-magazine"
                       aria-label="Remove membership"
                     >
-                      <X size={20} />
+                      <X size={20} strokeWidth={2.5} />
                     </button>
                   </div>
                 );
@@ -132,16 +146,16 @@ const Settings = () => {
           )}
 
           {/* Add New Membership */}
-          <form onSubmit={handleAddMembership} className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <form onSubmit={handleAddMembership} className="space-y-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-caption font-bold text-neutral-900 mb-3 uppercase tracking-wide">
                   Institution
                 </label>
                 <select
                   value={selectedInstitution}
                   onChange={(e) => setSelectedInstitution(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                  className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus-editorial transition-magazine text-body text-neutral-900"
                 >
                   <option value="">Select an institution</option>
                   {institutions
@@ -156,13 +170,13 @@ const Settings = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-caption font-bold text-neutral-900 mb-3 uppercase tracking-wide">
                   Membership Tier
                 </label>
                 <select
                   value={selectedTier}
                   onChange={(e) => setSelectedTier(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                  className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus-editorial transition-magazine text-body text-neutral-900 disabled:bg-neutral-100 disabled:cursor-not-allowed"
                   disabled={!selectedInstitution}
                 >
                   <option value="">Select a tier</option>
@@ -183,10 +197,10 @@ const Settings = () => {
               type="submit"
               disabled={!selectedInstitution || !selectedTier}
               className={`
-                w-full py-3 px-6 rounded-lg font-medium transition-colors
+                w-full py-4 px-6 rounded-2xl font-semibold transition-magazine text-body
                 ${selectedInstitution && selectedTier
-                  ? 'bg-gray-900 text-white hover:bg-gray-800'
-                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  ? 'bg-neutral-900 text-white hover:bg-neutral-800 shadow-soft hover:shadow-medium'
+                  : 'bg-neutral-200 text-neutral-400 cursor-not-allowed'
                 }
               `}
             >
@@ -196,20 +210,25 @@ const Settings = () => {
         </section>
 
         {/* Location Section */}
-        <section className="bg-white rounded-2xl shadow-sm p-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">
-            Location
-          </h3>
-          <p className="text-gray-600 mb-6">
-            Your current location helps us show relevant cultural experiences
-          </p>
+        <section className="bg-white rounded-3xl shadow-soft p-8 sm:p-10">
+          <div className="mb-6">
+            <h3 className="text-title-lg font-bold text-neutral-900 mb-3">
+              Location
+            </h3>
+            <p className="text-body text-neutral-600 leading-magazine">
+              Your location helps curate relevant cultural experiences nearby
+            </p>
+          </div>
 
-          <div className="p-4 bg-gray-50 rounded-xl">
-            <div className="font-semibold text-gray-900">
-              {userLocation.city}
+          <div className="p-6 bg-accent-cream rounded-2xl border border-neutral-200">
+            <div className="flex items-center gap-3">
+              <div className="w-1 h-1 rounded-full bg-accent-gold" />
+              <div className="text-body-lg font-bold text-neutral-900">
+                {userLocation.city}
+              </div>
             </div>
             {userLocation.neighborhood && (
-              <div className="text-sm text-gray-600">
+              <div className="text-body text-neutral-600 mt-1 ml-4">
                 {userLocation.neighborhood}
               </div>
             )}
@@ -217,13 +236,15 @@ const Settings = () => {
         </section>
 
         {/* Data Section */}
-        <section className="bg-white rounded-2xl shadow-sm p-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">
-            Your Data
-          </h3>
-          <p className="text-gray-600 mb-6">
-            All your preferences are stored locally in your browser
-          </p>
+        <section className="bg-white rounded-3xl shadow-soft p-8 sm:p-10">
+          <div className="mb-6">
+            <h3 className="text-title-lg font-bold text-neutral-900 mb-3">
+              Your Data
+            </h3>
+            <p className="text-body text-neutral-600 leading-magazine">
+              All preferences are stored locally in your browser for privacy
+            </p>
+          </div>
 
           <button
             onClick={() => {
@@ -232,7 +253,7 @@ const Settings = () => {
                 window.location.reload();
               }
             }}
-            className="px-6 py-3 bg-red-50 text-red-600 rounded-lg font-medium hover:bg-red-100 transition-colors"
+            className="px-6 py-3 bg-accent-terracotta/10 text-accent-terracotta rounded-2xl font-semibold hover:bg-accent-terracotta/20 transition-magazine"
           >
             Clear All Data
           </button>
