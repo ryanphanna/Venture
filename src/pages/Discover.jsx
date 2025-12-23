@@ -98,46 +98,91 @@ const Discover = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-8">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-br from-gray-900 to-gray-800 text-white py-12 px-4">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-2">
+    <div className="min-h-screen bg-accent-cream pb-16">
+      {/* Hero Section - Magazine editorial style */}
+      <div className="relative bg-gradient-to-br from-neutral-900 via-neutral-800 to-primary-800 text-white py-20 sm:py-28 px-6 sm:px-8 overflow-hidden">
+        {/* Decorative background elements */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-accent-gold/10 rounded-full -translate-y-48 translate-x-48 blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-accent-sage/10 rounded-full translate-y-40 -translate-x-40 blur-3xl" />
+
+        <div className="max-w-7xl mx-auto relative">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-0.5 bg-accent-gold" />
+            <span className="text-overline text-white/70">Your Cultural Guide</span>
+          </div>
+          <h2 className="text-display-sm sm:text-display font-bold mb-4 text-shadow-editorial leading-tight">
             Discover Toronto
           </h2>
-          <p className="text-gray-300 text-lg">
-            Curated cultural experiences just for you
+          <p className="text-body-lg text-white/80 max-w-2xl leading-magazine">
+            Curated cultural experiences tailored to your interests and memberships
           </p>
         </div>
       </div>
 
-      {/* Feed */}
-      <div className="max-w-7xl mx-auto px-4 -mt-6">
+      {/* Feed - Magazine layout with generous spacing */}
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 -mt-12">
         {sections.map((section, sectionIndex) => (
-          <div key={section.id} className="mb-8">
-            {/* Section Header */}
-            <div className="flex items-center space-x-2 mb-4">
-              <section.icon className={`${section.color}`} size={24} />
-              <h3 className="text-xl font-bold text-gray-900">
+          <div key={section.id} className="mb-16 sm:mb-20">
+            {/* Section Header - Refined typography */}
+            <div className="mb-8 sm:mb-10">
+              <div className="flex items-center gap-3 mb-3">
+                <section.icon
+                  className={`${section.color}`}
+                  size={28}
+                  strokeWidth={2}
+                />
+                <div className="h-px flex-1 bg-gradient-to-r from-neutral-300 to-transparent" />
+              </div>
+              <h3 className="text-headline sm:text-display-sm font-bold text-neutral-900 mb-2">
                 {section.title}
               </h3>
+              {section.id === 'ending-soon' && (
+                <p className="text-body text-neutral-600 leading-magazine">
+                  Don't miss these limited-time exhibitions
+                </p>
+              )}
+              {section.id === 'reciprocals' && (
+                <p className="text-body text-neutral-600 leading-magazine">
+                  Exclusive access through your memberships
+                </p>
+              )}
+              {section.id === 'free-access' && (
+                <p className="text-body text-neutral-600 leading-magazine">
+                  Experience culture at no cost
+                </p>
+              )}
             </div>
 
-            {/* Bento Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {/* Bento Grid - Dynamic layouts */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-editorial">
               {section.id === 'reciprocals' ? (
                 // Reciprocal benefits cards
                 section.items.map((item) => (
                   <ReciprocalCard key={item.id} reciprocal={item} />
                 ))
               ) : (
-                // Exhibit cards with varied sizes
+                // Exhibit cards with sophisticated varied sizes
                 section.items.map((item, index) => {
-                  // Vary the card sizes for visual interest
+                  // More dynamic size variation for visual focal points
                   let size = 'medium';
-                  if (sectionIndex === 0 && index === 0) size = 'large'; // First card in first section
-                  else if (index % 3 === 0) size = 'medium';
-                  else size = 'small';
+
+                  // First section gets a hero card
+                  if (sectionIndex === 0 && index === 0) {
+                    size = 'large';
+                  }
+                  // Create visual hierarchy with varied sizes
+                  else if (section.items.length >= 4) {
+                    if (index === 0) size = 'large';
+                    else if (index === 1 || index === 2) size = 'medium';
+                    else size = 'small';
+                  }
+                  else if (section.items.length === 3) {
+                    if (index === 0) size = 'medium';
+                    else size = 'small';
+                  }
+                  else if (section.items.length === 2) {
+                    size = 'medium';
+                  }
 
                   return (
                     <ExhibitCard
@@ -152,15 +197,17 @@ const Discover = () => {
           </div>
         ))}
 
-        {/* Empty State */}
+        {/* Empty State - Elegant design */}
         {sections.length === 0 && (
-          <div className="text-center py-16">
-            <Sparkles className="mx-auto text-gray-400 mb-4" size={48} />
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">
+          <div className="text-center py-24 sm:py-32">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-accent-gold to-accent-sage mx-auto mb-8 flex items-center justify-center">
+              <Sparkles className="text-white" size={36} strokeWidth={2} />
+            </div>
+            <h3 className="text-title-lg font-bold text-neutral-900 mb-4">
               Welcome to Culture Toronto
             </h3>
-            <p className="text-gray-500">
-              Set your interests in Settings to get personalized recommendations
+            <p className="text-body text-neutral-600 max-w-md mx-auto leading-magazine">
+              Set your interests in Settings to receive personalized cultural recommendations
             </p>
           </div>
         )}
