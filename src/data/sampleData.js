@@ -15,7 +15,25 @@ export const institutions = [
     },
     membershipTiers: ['individual', 'family'],
     website: 'https://www.rom.on.ca',
-    image: 'https://images.unsplash.com/photo-1566127444979-b3d2b654e3a6?w=800&q=80'
+    image: 'https://images.unsplash.com/photo-1566127444979-b3d2b654e3a6?w=800&q=80',
+    hours: {
+      weekday: '10:00 AM - 5:30 PM',
+      weekend: '10:00 AM - 5:30 PM',
+      note: 'Extended hours until 8:30 PM on Fridays'
+    },
+    admission: {
+      adult: '$23',
+      senior: '$18',
+      youth: '$14',
+      child: 'Free (under 4)',
+      note: 'Free admission on third Monday of each month, 5:30 PM - 8:30 PM'
+    },
+    accessibility: {
+      wheelchair: true,
+      parking: 'Accessible parking available',
+      assistance: 'Wheelchairs and walkers available at coat check',
+      features: ['Accessible washrooms', 'Elevators', 'ASL interpretation available']
+    }
   },
   {
     id: 'ago',
@@ -30,7 +48,25 @@ export const institutions = [
     },
     membershipTiers: ['individual', 'family', 'plus'],
     website: 'https://ago.ca',
-    image: 'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=800&q=80'
+    image: 'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=800&q=80',
+    hours: {
+      weekday: '10:30 AM - 5:00 PM',
+      weekend: '10:30 AM - 5:30 PM',
+      note: 'Open until 9:00 PM on Wednesdays'
+    },
+    admission: {
+      adult: '$25',
+      senior: '$18',
+      youth: '$11',
+      child: 'Free (under 5)',
+      note: 'Free admission Wednesdays 6:00 PM - 9:00 PM'
+    },
+    accessibility: {
+      wheelchair: true,
+      parking: 'Underground accessible parking',
+      assistance: 'Wheelchairs available at main entrance',
+      features: ['Accessible washrooms', 'Elevators', 'Sensory-friendly programs']
+    }
   },
   {
     id: 'toronto-zoo',
@@ -45,7 +81,25 @@ export const institutions = [
     },
     membershipTiers: ['individual', 'family'],
     website: 'https://www.torontozoo.com',
-    image: 'https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?w=800&q=80'
+    image: 'https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?w=800&q=80',
+    hours: {
+      weekday: '9:30 AM - 4:30 PM',
+      weekend: '9:30 AM - 4:30 PM',
+      note: 'Extended hours in summer (until 7:00 PM)'
+    },
+    admission: {
+      adult: '$29',
+      senior: '$24',
+      youth: '$19',
+      child: '$19',
+      note: 'Children under 3 are free'
+    },
+    accessibility: {
+      wheelchair: true,
+      parking: 'Accessible parking near main entrance',
+      assistance: 'Wheelchair and stroller rentals available',
+      features: ['Accessible pathways', 'Accessible washrooms', 'Service animals welcome']
+    }
   },
   {
     id: 'gardiner',
@@ -60,7 +114,25 @@ export const institutions = [
     },
     membershipTiers: ['individual', 'family'],
     website: 'https://www.gardinermuseum.on.ca',
-    image: 'https://images.unsplash.com/photo-1578301978162-7aae4d755744?w=800&q=80'
+    image: 'https://images.unsplash.com/photo-1578301978162-7aae4d755744?w=800&q=80',
+    hours: {
+      weekday: '10:00 AM - 5:00 PM',
+      weekend: '10:00 AM - 5:00 PM',
+      note: 'Open until 9:00 PM on Fridays'
+    },
+    admission: {
+      adult: '$15',
+      senior: '$11',
+      youth: '$11',
+      child: 'Free (under 13)',
+      note: 'Pay-what-you-can Fridays 4:00 PM - 9:00 PM'
+    },
+    accessibility: {
+      wheelchair: true,
+      parking: 'Street parking with accessible spots',
+      assistance: 'Wheelchairs available at front desk',
+      features: ['Accessible entrances', 'Elevators', 'Accessible washrooms']
+    }
   },
   {
     id: 'aga-khan',
@@ -75,7 +147,25 @@ export const institutions = [
     },
     membershipTiers: ['individual', 'family', 'benefactor'],
     website: 'https://www.agakhanmuseum.org',
-    image: 'https://images.unsplash.com/photo-1595433707802-6b2626ef1c91?w=800&q=80'
+    image: 'https://images.unsplash.com/photo-1595433707802-6b2626ef1c91?w=800&q=80',
+    hours: {
+      weekday: '10:00 AM - 6:00 PM',
+      weekend: '10:00 AM - 6:00 PM',
+      note: 'Closed Mondays'
+    },
+    admission: {
+      adult: '$20',
+      senior: '$15',
+      youth: '$15',
+      child: 'Free (under 6)',
+      note: 'Free admission first Wednesday of each month'
+    },
+    accessibility: {
+      wheelchair: true,
+      parking: 'Free accessible parking on-site',
+      assistance: 'Wheelchairs and mobility aids available',
+      features: ['Fully accessible facility', 'Accessible washrooms', 'Quiet spaces available']
+    }
   },
   {
     id: 'science-centre',
@@ -90,7 +180,25 @@ export const institutions = [
     },
     membershipTiers: ['individual', 'family'],
     website: 'https://www.ontariosciencecentre.ca',
-    image: 'https://images.unsplash.com/photo-1567713165018-c392e80a2d7e?w=800&q=80'
+    image: 'https://images.unsplash.com/photo-1567713165018-c392e80a2d7e?w=800&q=80',
+    hours: {
+      weekday: '10:00 AM - 4:00 PM',
+      weekend: '10:00 AM - 5:00 PM',
+      note: 'Extended hours during school breaks'
+    },
+    admission: {
+      adult: '$26',
+      senior: '$19',
+      youth: '$19',
+      child: '$19',
+      note: 'Children under 3 are free'
+    },
+    accessibility: {
+      wheelchair: true,
+      parking: 'Accessible parking available',
+      assistance: 'Wheelchairs and strollers available',
+      features: ['Accessible exhibits', 'Accessible washrooms', 'Sensory-friendly hours']
+    }
   }
 ];
 
