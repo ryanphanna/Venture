@@ -1,4 +1,4 @@
-import { X, MapPin, Clock, Gift, ExternalLink, Calendar, Sparkles } from 'lucide-react';
+import { X, MapPin, Clock, Gift, ExternalLink, Calendar, Sparkles, DollarSign, Accessibility } from 'lucide-react';
 import { getInstitutionById } from '../data/sampleData';
 
 const ExhibitDetail = ({ exhibit, onClose }) => {
@@ -149,6 +149,76 @@ const ExhibitDetail = ({ exhibit, onClose }) => {
                     {exhibit.freeAccessDetails.days.join(', ')}
                     {exhibit.freeAccessDetails.times && (
                       <span> • {exhibit.freeAccessDetails.times}</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Hours */}
+            {institution?.hours && (
+              <div className="flex items-start gap-3">
+                <Clock size={20} className="text-neutral-500 mt-1" strokeWidth={2} />
+                <div>
+                  <div className="text-caption font-semibold text-neutral-900 mb-1">
+                    Hours
+                  </div>
+                  <div className="text-body text-neutral-600">
+                    <div>Weekdays: {institution.hours.weekday}</div>
+                    <div>Weekends: {institution.hours.weekend}</div>
+                    {institution.hours.note && (
+                      <div className="text-caption text-neutral-500 mt-1">{institution.hours.note}</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Admission Prices */}
+            {institution?.admission && (
+              <div className="flex items-start gap-3">
+                <DollarSign size={20} className="text-neutral-500 mt-1" strokeWidth={2} />
+                <div>
+                  <div className="text-caption font-semibold text-neutral-900 mb-1">
+                    Admission
+                  </div>
+                  <div className="text-body text-neutral-600">
+                    <div>Adult: {institution.admission.adult}</div>
+                    <div>Senior: {institution.admission.senior}</div>
+                    <div>Youth: {institution.admission.youth}</div>
+                    <div>Child: {institution.admission.child}</div>
+                    {institution.admission.note && (
+                      <div className="text-caption text-accent-sage font-medium mt-1">{institution.admission.note}</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Accessibility */}
+            {institution?.accessibility && (
+              <div className="flex items-start gap-3">
+                <Accessibility size={20} className="text-neutral-500 mt-1" strokeWidth={2} />
+                <div>
+                  <div className="text-caption font-semibold text-neutral-900 mb-1">
+                    Accessibility
+                  </div>
+                  <div className="text-body text-neutral-600">
+                    {institution.accessibility.wheelchair && (
+                      <div>✓ Wheelchair accessible</div>
+                    )}
+                    {institution.accessibility.parking && (
+                      <div>✓ {institution.accessibility.parking}</div>
+                    )}
+                    {institution.accessibility.assistance && (
+                      <div>✓ {institution.accessibility.assistance}</div>
+                    )}
+                    {institution.accessibility.features && institution.accessibility.features.length > 0 && (
+                      <div className="mt-1">
+                        {institution.accessibility.features.map((feature, idx) => (
+                          <div key={idx}>✓ {feature}</div>
+                        ))}
+                      </div>
                     )}
                   </div>
                 </div>
