@@ -9,48 +9,53 @@ const TipCard = ({ tip, size = 'medium' }) => {
   };
 
   const heightClasses = {
-    small: 'h-[280px]',
-    medium: 'h-[320px] sm:h-[360px]',
-    large: 'h-[420px]',
+    small: 'h-[400px] sm:h-[450px]',
+    medium: 'h-[500px] sm:h-[550px]',
+    large: 'h-[600px]',
   };
 
-  // Different visual styles for variety
+  // Different visual styles for variety - MORE CONTRAST
   const getStyleByType = () => {
     switch (tip.type) {
       case 'membership':
         return {
-          gradient: 'from-accent-gold/20 via-accent-gold/10 to-accent-cream',
+          gradient: 'from-accent-gold via-accent-gold/60 to-accent-gold/40',
           icon: Gift,
-          iconColor: 'text-accent-gold',
-          accentColor: 'accent-gold'
+          iconColor: 'text-white',
+          textColor: 'text-white',
+          accentColor: 'white'
         };
       case 'insider':
         return {
-          gradient: 'from-accent-sage/20 via-accent-sage/10 to-accent-cream',
+          gradient: 'from-accent-terracotta via-accent-terracotta/70 to-accent-terracotta/50',
           icon: Lightbulb,
-          iconColor: 'text-accent-sage',
-          accentColor: 'accent-sage'
+          iconColor: 'text-white',
+          textColor: 'text-white',
+          accentColor: 'white'
         };
       case 'neighborhood':
         return {
-          gradient: 'from-accent-slate/20 via-accent-slate/10 to-accent-cream',
+          gradient: 'from-accent-slate via-accent-slate/70 to-accent-slate/50',
           icon: MapPin,
-          iconColor: 'text-accent-slate',
-          accentColor: 'accent-slate'
+          iconColor: 'text-white',
+          textColor: 'text-white',
+          accentColor: 'white'
         };
       case 'favorite':
         return {
-          gradient: 'from-accent-terracotta/20 via-accent-terracotta/10 to-accent-cream',
+          gradient: 'from-accent-sage via-accent-sage/70 to-accent-sage/50',
           icon: Heart,
-          iconColor: 'text-accent-terracotta',
-          accentColor: 'accent-terracotta'
+          iconColor: 'text-white',
+          textColor: 'text-white',
+          accentColor: 'white'
         };
       default:
         return {
-          gradient: 'from-primary-100 to-accent-cream',
+          gradient: 'from-neutral-900 via-neutral-800 to-neutral-700',
           icon: Sparkles,
-          iconColor: 'text-primary-600',
-          accentColor: 'primary-600'
+          iconColor: 'text-accent-gold',
+          textColor: 'text-white',
+          accentColor: 'accent-gold'
         };
     }
   };
@@ -64,37 +69,35 @@ const TipCard = ({ tip, size = 'medium' }) => {
         ${sizeClasses[size]}
         ${heightClasses[size]}
         relative overflow-hidden
-        rounded-3xl shadow-soft hover:shadow-medium
-        transition-magazine cursor-default
+        rounded-3xl shadow-medium hover:shadow-editorial
+        transition-magazine cursor-default hover-elevate
         bg-gradient-to-br ${style.gradient}
-        border border-neutral-200/50
       `}
     >
-      {/* Decorative elements */}
-      <div className="absolute top-0 right-0 w-48 h-48 bg-white/40 rounded-full -translate-y-24 translate-x-24 blur-3xl" />
-      <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/40 rounded-full translate-y-16 -translate-x-16 blur-2xl" />
+      {/* Decorative elements - MORE SUBTLE */}
+      <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-32 translate-x-32 blur-3xl" />
+      <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full translate-y-24 -translate-x-24 blur-3xl" />
 
-      <div className="relative h-full p-7 sm:p-8 flex flex-col justify-between">
+      <div className="relative h-full p-8 sm:p-10 flex flex-col justify-between">
         <div>
-          {/* Icon badge */}
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/80 backdrop-soft shadow-soft mb-5">
-            <Icon size={28} strokeWidth={2} className={style.iconColor} />
+          {/* Icon badge - MUCH bigger and bolder */}
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/20 backdrop-editorial shadow-soft mb-6">
+            <Icon size={32} strokeWidth={2.5} className={style.iconColor} />
           </div>
 
-          {/* Tip content */}
+          {/* Tip content - MASSIVE editorial typography */}
           <h3 className={`
-            font-bold mb-3 leading-tight-magazine
-            ${size === 'large' ? 'text-title-lg sm:text-headline' : 'text-title sm:text-title-lg'}
-            text-neutral-900
+            font-black ${style.textColor} mb-4 leading-none tracking-tighter
+            ${size === 'large' ? 'text-4xl sm:text-5xl md:text-6xl' : size === 'medium' ? 'text-3xl sm:text-4xl md:text-5xl' : 'text-2xl sm:text-3xl'}
           `}>
             {tip.title}
           </h3>
 
           {tip.description && (
             <p className={`
-              text-neutral-700 leading-magazine
-              ${size === 'large' ? 'text-body-lg' : 'text-body'}
-              ${size === 'small' ? 'line-clamp-3' : 'line-clamp-4'}
+              ${style.textColor} opacity-90 leading-relaxed font-medium
+              ${size === 'large' ? 'text-xl sm:text-2xl' : size === 'medium' ? 'text-lg sm:text-xl' : 'text-base sm:text-lg'}
+              ${size === 'small' ? 'line-clamp-3' : size === 'medium' ? 'line-clamp-4' : 'line-clamp-5'}
             `}>
               {tip.description}
             </p>
@@ -103,9 +106,9 @@ const TipCard = ({ tip, size = 'medium' }) => {
 
         {/* Optional label/badge at bottom */}
         {tip.label && (
-          <div className="flex items-center gap-2">
-            <div className={`w-1 h-1 rounded-full bg-${style.accentColor}`} />
-            <span className="text-caption text-neutral-600 font-semibold uppercase tracking-wider">
+          <div className="flex items-center gap-2.5 mt-6">
+            <div className={`w-1.5 h-1.5 rounded-full bg-${style.accentColor}`} />
+            <span className={`text-sm ${style.textColor} opacity-80 font-bold uppercase tracking-widest`}>
               {tip.label}
             </span>
           </div>
