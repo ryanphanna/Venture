@@ -183,8 +183,10 @@ describe('ExhibitCard - Date Handling', () => {
       expect(screen.getByText('14 days')).toBeInTheDocument();
     });
 
-    it('should return null when exhibit ends today at start of day', () => {
+    it('should return null when diffDays equals 0 (boundary condition)', () => {
       // Mock current date to be January 15, 2025 at start of day
+      // When normalized, both now and endDate are the same day, resulting in diffDays = 0
+      // The logic returns null for 0 or negative values (already ended)
       const mockDate = new Date('2025-01-15T00:00:00Z');
       vi.setSystemTime(mockDate);
 
