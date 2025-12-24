@@ -105,7 +105,7 @@ const Discover = ({ onNavigate }) => {
     }
   ];
 
-  // Create a fluid mood board grid mixing all content types with INTELLIGENT PACKING
+  // Create a fluid mood board grid mixing all content types with 2D PACKING
   const createMoodBoardGrid = () => {
     const rawItems = [];
 
@@ -168,80 +168,113 @@ const Discover = ({ onNavigate }) => {
       rawItems.push({ type: 'exhibit', data: exhibit, priority: 6 });
     });
 
-    // SMART PACKING ALGORITHM - NO MORE GAPS!
-    // Grid is 4 columns. Sizes: wide=4, large=3, medium=2, small=1
-    const packed = [];
-    let rowWidth = 0;
+    // 2D GRID PACKING ALGORITHM
+    // Grid is 4 columns wide, tracks occupied cells across rows
     const GRID_COLS = 4;
+    const packed = [];
+    
+    // Track which cells are occupied: grid[row][col] = true/false
+    const grid = [];
+    const getCell = (row, col) => {
+      if (!grid[row]) grid[row] = [];
+      return grid[row][col] || false;
+    };
+    const setCell = (row, col, value) => {
+      if (!grid[row]) grid[row] = [];
+      grid[row][col] = value;
+    };
 
+    // Get size dimensions for an item: [cols, rows]
     const getSizeForItem = (item, index) => {
-      // First item should be hero
-      if (index === 0 && item.priority === 1) return 'large';
+      // First item should be hero (2×2)
+      if (index === 0 && item.priority === 1) return [2, 2];
       
-      // Reciprocals always medium (they span 2 cols in their component)
-      if (item.type === 'reciprocal') return 'medium';
+      // Reciprocals: wide rectangles (2×1) - always single row
+      if (item.type === 'reciprocal') return [2, 1];
       
-      // Vary tip sizes for visual interest
+      // Tips: mostly small, occasional variety
       if (item.type === 'tip') {
-        return index % 3 === 0 ? 'medium' : 'small';
+        if (index % 7 === 0) return [2, 2]; // Rare large square
+        if (index % 4 === 0) return [2, 1]; // Occasional wide
+        return [1, 1]; // Mostly small squares
       }
       
-      // Exhibits get variety based on priority
+      // Exhibits: create variety but favor smaller sizes
       if (item.type === 'exhibit') {
-        // High priority = bigger cards
         if (item.priority <= 2) {
-          return index % 5 === 0 ? 'large' : index % 3 === 0 ? 'medium' : 'small';
+          // High priority exhibits get occasional big sizes
+          if (index % 6 === 0) return [2, 2]; // Rare large square
+          if (index % 4 === 0) return [1, 2]; // Occasional tall
+          if (index % 3 === 0) return [2, 1]; // Occasional wide
+          return [1, 1]; // Mostly small
         }
-        // Lower priority = mostly medium/small
-        return index % 4 === 0 ? 'medium' : 'small';
+        // Lower priority = almost all small, with rare variety
+        if (index % 8 === 0) return [2, 1]; // Very occasional wide
+        if (index % 10 === 0) return [1, 2]; // Very occasional tall
+        return [1, 1]; // Default small
       }
       
-      return 'small';
+      return [1, 1]; // Default: small square
     };
 
-    const getColSpan = (size) => {
-      switch(size) {
-        case 'wide': return 4;
-        case 'large': return 3;
-        case 'medium': return 2;
-        case 'small': return 1;
-        default: return 1;
+    // Find the next available position for a card of given size
+    // Try to place as early as possible (top-left) to minimize gaps
+    const findPosition = (cols, rows) => {
+      // Scan every possible position starting from top-left
+      // This ensures we fill gaps aggressively
+      for (let row = 0; row < 100; row++) {
+        for (let col = 0; col <= GRID_COLS - cols; col++) {
+          // Check if this exact position is available
+          let canFit = true;
+          for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+              if (getCell(row + r, col + c)) {
+                canFit = false;
+                break;
+              }
+            }
+            if (!canFit) break;
+          }
+          
+          if (canFit) {
+            // Found the earliest available position!
+            return { row, col };
+          }
+        }
+      }
+      
+      // Should never reach here
+      console.error('Could not find position for card', cols, rows);
+      return { row: 0, col: 0 };
+    };
+
+    // Mark cells as occupied
+    const markOccupied = (row, col, cols, rows) => {
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          setCell(row + r, col + c, true);
+        }
       }
     };
 
+    // Pack each item
     rawItems.forEach((item, index) => {
-      const desiredSize = getSizeForItem(item, index);
-      let size = desiredSize;
-      let cols = getColSpan(size);
-
-      // INTELLIGENT PACKING: If item doesn't fit in current row, downsize it
-      const spaceLeft = GRID_COLS - rowWidth;
+      let [cols, rows] = getSizeForItem(item, index);
       
-      if (cols > spaceLeft) {
-        // Item won't fit - try to find a size that WILL fit
-        if (spaceLeft >= 2) {
-          size = 'medium';
-          cols = 2;
-        } else if (spaceLeft >= 1) {
-          size = 'small';
-          cols = 1;
-        } else {
-          // No space left in row - start new row
-          rowWidth = 0;
-          // Keep original size for new row
-          size = desiredSize;
-          cols = getColSpan(size);
-        }
-      }
-
-      // Add item with its final size
-      packed.push({ ...item, size });
-      rowWidth += cols;
-
-      // Reset row if we've filled it exactly
-      if (rowWidth >= GRID_COLS) {
-        rowWidth = 0;
-      }
+      // Find position for this card
+      const pos = findPosition(cols, rows);
+      
+      // Mark cells as occupied
+      markOccupied(pos.row, pos.col, cols, rows);
+      
+      // Add to packed items with grid position
+      packed.push({
+        ...item,
+        cols,
+        rows,
+        gridColumn: `${pos.col + 1} / span ${cols}`,
+        gridRow: `${pos.row + 1} / span ${rows}`
+      });
     });
 
     return packed;
@@ -271,19 +304,25 @@ const Discover = ({ onNavigate }) => {
         </div>
       </div>
 
-      {/* Mood Board Grid - Fluid bento layout with NO GAPS */}
+      {/* Mood Board Grid - Fluid bento layout with 2D packing */}
       <div className="max-w-7xl mx-auto px-6 sm:px-8 -mt-8">
         {moodBoardItems.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-editorial">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-editorial auto-rows-[320px]">
             {moodBoardItems.map((item, index) => {
+              const gridStyle = {
+                gridColumn: item.gridColumn,
+                gridRow: item.gridRow
+              };
+
               switch (item.type) {
                 case 'exhibit':
                   return (
                     <ExhibitCard
                       key={`exhibit-${item.data.id}-${index}`}
                       exhibit={item.data}
-                      size={item.size}
+                      size="custom"
                       onClick={() => setSelectedExhibit(item.data)}
+                      style={gridStyle}
                     />
                   );
                 case 'reciprocal':
@@ -291,6 +330,7 @@ const Discover = ({ onNavigate }) => {
                     <ReciprocalCard
                       key={`reciprocal-${item.data.id}-${index}`}
                       reciprocal={item.data}
+                      style={gridStyle}
                     />
                   );
                 case 'tip':
@@ -298,7 +338,8 @@ const Discover = ({ onNavigate }) => {
                     <TipCard
                       key={`tip-${item.data.id}-${index}`}
                       tip={item.data}
-                      size={item.size}
+                      size="custom"
+                      style={gridStyle}
                     />
                   );
                 default:
