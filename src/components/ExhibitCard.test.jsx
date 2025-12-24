@@ -22,16 +22,13 @@ const renderWithContext = (component) => {
 };
 
 describe('ExhibitCard - Date Handling', () => {
-  let originalDate;
-  
   beforeEach(() => {
-    // Store original Date
-    originalDate = global.Date;
+    // Mock system time will be set in individual tests
   });
 
   afterEach(() => {
-    // Restore original Date
-    global.Date = originalDate;
+    // Restore time after each test
+    vi.useRealTimers();
   });
 
   describe('getDaysUntilEnd() - Basic Functionality', () => {
