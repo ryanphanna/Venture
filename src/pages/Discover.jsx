@@ -79,44 +79,71 @@ const Discover = ({ onNavigate }) => {
 
   const notRecentlyVisited = getNotRecentlyVisited();
 
-  // Cultural tips and insights to sprinkle throughout the mood board
-  const culturalTips = [
-    {
-      id: 'tip-reciprocal',
-      type: 'membership',
-      title: 'Your membership unlocks more than you think',
-      description: 'Many cultural institutions offer reciprocal benefits. Check your membership card for the reciprocal icon.',
-      label: 'Pro Tip'
-    },
-    {
-      id: 'tip-free',
-      type: 'insider',
-      title: 'Free culture nights are everywhere',
-      description: 'Most museums offer free admission on select evenings or afternoons. Check their websites for "Community Access" or "Free First Thursdays".',
-      label: 'Insider Tip'
-    },
-    {
-      id: 'tip-timing',
-      type: 'insider',
-      title: 'Visit on weekday mornings',
-      description: 'Avoid crowds by visiting cultural institutions on weekday mornings. You\'ll have galleries almost to yourself and can truly immerse in the art.',
-      label: 'Pro Tip'
-    },
-    {
-      id: 'tip-explore',
-      type: 'neighborhood',
-      title: 'Explore by neighborhood',
-      description: 'Group visits by area to discover hidden gems. Many neighborhoods have clusters of galleries, museums, and cultural spaces within walking distance.',
-      label: 'Explore'
-    },
-    {
-      id: 'tip-special',
-      type: 'favorite',
-      title: 'Temporary exhibits are worth it',
-      description: 'Special exhibitions often showcase rare artifacts and artwork that may never return. Don\'t miss these limited-time opportunities.',
-      label: 'Don\'t Miss'
+  // SMART TIPS GENERATION
+  const generateSmartTips = () => {
+    const tips = [];
+
+    // Tip 1: Reciprocal Benefits (if user has memberships)
+    if (userMemberships.length > 0) {
+      tips.push({
+        id: 'tip-reciprocal',
+        type: 'membership',
+        title: 'Maximize your membership',
+        description: `Your ${userMemberships[0].institutionId} membership might get you into other museums for free. Look for reciprocal programs.`,
+        label: 'Member Perk'
+      });
+    } else {
+      // Alternate: Membership value
+      tips.push({
+        id: 'tip-membership',
+        type: 'insider',
+        title: 'Membership pays for itself',
+        description: 'Visiting just 3 times a year usually covers the cost of an annual membership.',
+        label: 'Pro Tip'
+      });
     }
-  ];
+
+    // Tip 2: Crowd Avoidance (General)
+    tips.push({
+      id: 'tip-crowds',
+      type: 'insider',
+      title: 'Skip the free-night crowds',
+      description: 'Free nights are great, but Tuesday mornings offer the quietest galleries for true contemplation.',
+      label: 'Insider Secret'
+    });
+
+    // Tip 3: Neighborhood based (Context aware placeholder)
+    tips.push({
+      id: 'tip-neighborhood',
+      type: 'neighborhood',
+      title: 'Make a day of it',
+      description: 'Many cultural spots are clustered. Check out nearby galleries when you visit a major museum.',
+      label: 'Explore'
+    });
+
+    // Tip 4: Interaction based
+    if (visitHistory.length > 5) {
+      tips.push({
+        id: 'tip-deep-dive',
+        type: 'favorite',
+        title: 'Become a regular',
+        description: 'Visiting the same collection multiple times reveals details you missed the first time.',
+        label: 'Deep Dive'
+      });
+    } else {
+      tips.push({
+        id: 'tip-start',
+        type: 'favorite',
+        title: 'Start with what you love',
+        description: 'Don\'t feel pressured to see everything. Pick one wing and take your time.',
+        label: 'Beginner Tip'
+      });
+    }
+
+    return tips;
+  };
+
+  const smartTips = generateSmartTips();
 
   // Create a fluid mood board grid mixing all content types with 2D PACKING
   const createMoodBoardGrid = () => {
@@ -133,8 +160,8 @@ const Discover = ({ onNavigate }) => {
     }
 
     // Priority 2: Free access + tip
-    if (freeAccess.length > 0 && culturalTips[1]) {
-      rawItems.push({ type: 'tip', data: culturalTips[1], priority: 2 });
+    if (freeAccess.length > 0 && smartTips[1]) {
+      rawItems.push({ type: 'tip', data: smartTips[1], priority: 2 });
     }
     if (freeAccess.length > 0) {
       rawItems.push({ type: 'exhibit', data: freeAccess[0], priority: 2 });
@@ -145,8 +172,8 @@ const Discover = ({ onNavigate }) => {
 
     // Priority 3: Reciprocal benefits
     if (userReciprocals.length > 0) {
-      if (culturalTips[0]) {
-        rawItems.push({ type: 'tip', data: culturalTips[0], priority: 3 });
+      if (smartTips[0]) {
+        rawItems.push({ type: 'tip', data: smartTips[0], priority: 3 });
       }
       userReciprocals.slice(0, 2).forEach(recip => {
         rawItems.push({ type: 'reciprocal', data: recip, priority: 3 });
@@ -154,8 +181,8 @@ const Discover = ({ onNavigate }) => {
     }
 
     // Priority 4: More tips
-    if (culturalTips[2]) {
-      rawItems.push({ type: 'tip', data: culturalTips[2], priority: 4 });
+    if (smartTips[2]) {
+      rawItems.push({ type: 'tip', data: smartTips[2], priority: 4 });
     }
 
     // Priority 5: Interest-matched exhibits
@@ -167,13 +194,10 @@ const Discover = ({ onNavigate }) => {
     });
 
     // More tips sprinkled in
-    if (culturalTips[3]) {
-      rawItems.splice(Math.floor(rawItems.length * 0.5), 0,
-        { type: 'tip', data: culturalTips[3], priority: 4 });
-    }
-    if (culturalTips[4]) {
-      rawItems.splice(Math.floor(rawItems.length * 0.7), 0,
-        { type: 'tip', data: culturalTips[4], priority: 4 });
+    if (smartTips[3]) {
+      // Find a good spot in the middle
+      const insertIdx = Math.max(1, Math.floor(rawItems.length * 0.5));
+      rawItems.splice(insertIdx, 0, { type: 'tip', data: smartTips[3], priority: 4 });
     }
 
     // Priority 6: Not recently visited
